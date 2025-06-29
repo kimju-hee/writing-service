@@ -2,7 +2,9 @@ package miniprojectjo.infra;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.naming.NameParser;
+
+import java.sql.Date;
+
 import javax.naming.NameParser;
 import javax.transaction.Transactional;
 import miniprojectjo.config.kafka.KafkaProcessor;
@@ -16,11 +18,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class PolicyHandler {
-
+    
     @Autowired
     ManuscriptRepository manuscriptRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void whatever(@Payload String eventString) {}
+    public void whatever(@Payload String eventString) {
+        // 디버깅용 기본 수신
+        System.out.println("Received unknown event: " + eventString);
+    }
+
+
 }
 //>>> Clean Arch / Inbound Adaptor

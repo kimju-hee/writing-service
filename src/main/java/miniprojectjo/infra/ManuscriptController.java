@@ -7,8 +7,6 @@ import javax.transaction.Transactional;
 import miniprojectjo.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //<<< Clean Arch / Inbound Adaptor
 
@@ -43,5 +41,17 @@ public class ManuscriptController {
         manuscriptRepository.save(manuscript);
         return manuscript;
     }
+    @PutMapping("/{id}/edit")
+    public void edit(@PathVariable Long id, @RequestBody RequestPublishCommand command) {
+        ManuscriptRepository repo = Manuscript.repository();
+        repo.findById(id).ifPresent(manuscript -> manuscript.editManuscript(command.getTitle(), command.getContent()));
+    }
+
+    @PutMapping("/{id}/request-publish")
+    public void requestPublish(@PathVariable Long id, @RequestBody RequestPublishCommand command) {
+        ManuscriptRepository repo = Manuscript.repository();
+        repo.findById(id).ifPresent(manuscript -> manuscript.requestPublish(command));
+    }
+
 }
 //>>> Clean Arch / Inbound Adaptor
