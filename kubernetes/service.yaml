@@ -5,8 +5,10 @@ metadata:
   labels:
     app: writing
 spec:
-  ports:
-    - port: 8080
-      targetPort: 8080
   selector:
     app: writing
+  ports:
+    - protocol: TCP
+      port: 80         # 외부 접근 시 사용할 포트
+      targetPort: 8080 # 내부 컨테이너 포트
+  type: LoadBalancer

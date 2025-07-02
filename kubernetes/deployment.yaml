@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: writing
-          image: "username/writing:latest"
+          image: project20registry.azurecr.io/writing-service:20250702
           ports:
             - containerPort: 8080
           readinessProbe:
