@@ -8,6 +8,8 @@ import miniprojectjo.infra.AbstractEvent;
 
 //<<< DDD / Domain Event
 // @Data
+@Getter
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor

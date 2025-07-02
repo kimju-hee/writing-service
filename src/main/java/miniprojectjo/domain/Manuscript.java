@@ -34,12 +34,22 @@ public class Manuscript {
     private Date createdAt;
     private Date updatedAt;
 
-    @PostPersist
-    public void onPostPersist() {
+// ✅ 1. onPostPersist()에서 ManuscriptRegistered 이벤트 발행 추가
+
+    @PrePersist
+    public void onPrePersist() {
         this.status = Status.WRITING;
         this.createdAt = new Date();
         this.updatedAt = new Date();
     }
+        
+    @PostPersist
+    public void onPostPersist() {
+        ManuscriptRegistered registered = new ManuscriptRegistered(this);
+        registered.publishAfterCommit();
+    }
+
+
 
     @PreUpdate
     public void onPreUpdate() {
@@ -60,26 +70,37 @@ public class Manuscript {
         this.content = newContent;
         this.status = Status.EDITED;
         this.updatedAt = new Date();
-        repository().save(this);
+        // 저장은 컨트롤러/서비스에서
     }
+
 
     // 출간 요청
-public void requestPublish(RequestPublishCommand cmd) {
-    if (this.status != Status.EDITED) {
-        throw new IllegalStateException("편집된 상태의 원고만 출간 요청이 가능합니다.");
+    public void requestPublish(RequestPublishCommand cmd) {
+
+        if (this.status != Status.EDITED) {
+            throw new IllegalStateException("현재 상태가 '" + this.status + "'이므로 출간 요청이 불가능합니다. 편집 상태(EDITED)여야 합니다.");
+        }
+
+        if (cmd.getTitle() != null && !cmd.getTitle().equals(this.title)) {
+            this.title = cmd.getTitle();
+        }
+
+        if (cmd.getContent() != null && !cmd.getContent().equals(this.content)) {
+            this.content = cmd.getContent();
+        }
+
+        this.status = Status.REQUESTED;
+        this.updatedAt = new Date();
+
+
+        // 저장은 컨트롤러 또는 서비스 계층에서 수행할 수도 있음. 지금은 유지
+        repository().save(this);
+
+        PublishingRequested event = new PublishingRequested(this);
+        event.publishAfterCommit();
+
     }
 
-    // 제목/내용 최신화
-    if (cmd.getTitle() != null) this.title = cmd.getTitle();
-    if (cmd.getContent() != null) this.content = cmd.getContent();
-
-    this.status = Status.REQUESTED;
-    this.updatedAt = new Date();
-    repository().save(this);
-
-    PublishingRequested event = new PublishingRequested(this);
-    event.publishAfterCommit();
-}
 
     //>>> Clean Arch / Port Method
 

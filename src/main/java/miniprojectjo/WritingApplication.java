@@ -19,3 +19,4 @@ public class WritingApplication {
             SpringApplication.run(WritingApplication.class, args);
     }
 }
+
