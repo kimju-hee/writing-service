@@ -5,7 +5,7 @@ metadata:
   labels:
     app: writing
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: writing
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: writing
-          image: project20registry.azurecr.io/writing-service:20250702
+          image: project20registry.azurecr.io/writing-service:20250704
           ports:
             - containerPort: 8080
           readinessProbe:

@@ -36,7 +36,7 @@ public class AbstractEvent {
 
             outputChannel.send(
                 MessageBuilder
-                    .withPayload(this)
+                    .withPayload(toJson()) // ✅ Base64 방지: JSON 문자열로 명시적 전송
                     .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                     .setHeader("type", getEventType())
                     .build()
@@ -46,6 +46,7 @@ public class AbstractEvent {
             e.printStackTrace();
         }
     }
+
 
 
     public void publishAfterCommit() {

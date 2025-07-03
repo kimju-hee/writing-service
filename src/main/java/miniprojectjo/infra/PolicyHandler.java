@@ -24,7 +24,7 @@ public class PolicyHandler {
         condition = "headers['type']=='ManuscriptRegistered'"
     )
     public void onManuscriptRegistered(@Payload ManuscriptRegistered event) {
-        System.out.println("📝 [원고 등록] 이벤트 수신: " + event);
+        System.out.println("[원고 등록] 이벤트 수신: " + event);
     }
 
     // 원고 수정 이벤트 수신
@@ -33,7 +33,7 @@ public class PolicyHandler {
         condition = "headers['type']=='ManuscriptEdited'"
     )
     public void onManuscriptEdited(@Payload ManuscriptEdited event) {
-        System.out.println("✏️ [원고 수정] 이벤트 수신: " + event);
+        System.out.println("[원고 수정] 이벤트 수신: " + event);
     }
 
     // 출간 요청 이벤트 수신
@@ -42,7 +42,7 @@ public class PolicyHandler {
         condition = "headers['type']=='PublishingRequested'"
     )
     public void onPublishingRequested(@Payload PublishingRequested event) {
-        System.out.println("📨 [출간 요청] 이벤트 수신: " + event);
+        System.out.println("[출간 요청] 이벤트 수신: " + event);
         Optional<Manuscript> optional = manuscriptRepository.findById(event.getId());
         optional.ifPresent(manuscript -> {
             manuscript.setStatus(Status.REQUESTED);
@@ -56,7 +56,7 @@ public class PolicyHandler {
         condition = "headers['type']=='PublishingApproved'"
     )
     public void onPublishingApproved(@Payload PublishingApproved event) {
-        System.out.println("✅ [출간 승인] 이벤트 수신: " + event);
+        System.out.println("[출간 승인] 이벤트 수신: " + event);
         Optional<Manuscript> optional = manuscriptRepository.findById(event.getId());
         optional.ifPresent(manuscript -> {
             manuscript.setStatus(Status.DONE);
@@ -70,11 +70,20 @@ public class PolicyHandler {
         condition = "headers['type']=='PublishingRejected'"
     )
     public void onPublishingRejected(@Payload PublishingRejected event) {
-        System.out.println("❌ [출간 거절] 이벤트 수신: " + event);
+        System.out.println("[출간 거절] 이벤트 수신: " + event);
         Optional<Manuscript> optional = manuscriptRepository.findById(event.getId());
         optional.ifPresent(manuscript -> {
             manuscript.setStatus(Status.EDITED);
             manuscriptRepository.save(manuscript);
         });
     }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='AuthorRegistered'"
+    )
+    public void wheneverAuthorRegistered(@Payload AuthorRegistered event) {
+        System.out.println("작가 등록됨: " + event);
+    }
+
 }
